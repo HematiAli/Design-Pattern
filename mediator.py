@@ -1,0 +1,76 @@
+"""
+Mediator
+	- a behavioral design pattern
+"""
+from abc import ABC, abstractmethod
+class AbstractMediator(ABC):
+	@abstractmethod
+	def notify(self, sender, event): pass
+
+class ConcreteMediator(AbstractMediator):
+	def __init__(self, comp_a, comp_b):
+		self.comp_a = comp_a
+		self.comp_b = comp_b
+
+		self.comp_a.set_mediator(self)
+		self.comp_b.set_mediator(self)
+
+	def notify(self, sender, event):
+		self.comp_b.receive(sender, event)
+
+
+class AbstractComponent(ABC):
+	def __init__(self, mediator=None):
+		self._mediator = mediator
+	def set_mediator(self, mediator):
+		self._mediator = mediator
+
+	@abstractmethod
+	def receive(self, sender, event): pass
+	@abstractmethod
+	def notify(self, sender, event): pass
+
+
+class Component1(AbstractComponent):
+	def receive(self, sender, event):
+		print(f'Component 1 received event ({sender.__class__.__name__} {event})')
+
+	def notify(self, event):
+		self._mediator.notify(self, event)
+
+	def do_a(self):
+		print('Component 1 does A.')
+		self.notify('A')
+
+
+class Component2(AbstractComponent):
+	def receive(self, sender, event):
+		print(f'Component 2 received event ({sender.__class__.__name__} {event})')
+
+	def notify(self, event):
+		self._mediator.notify(self, event)
+
+	def do_b(self):
+		print('Component 2 does B.')
+		self.notify('B')
+
+
+class Component3(AbstractComponent):
+	def receive(self, sender, event):
+		print(f'Component 3 received event ({sender.__class__.__name__} {event})')
+
+	def notify(self, event):
+		self._mediator.notify(self, event)
+
+	def do_c(self):
+		print('Component 3 does C.')
+		self.notify('C')
+
+
+c1 = Component1()
+c2 = Component2()
+c3 = Component3()
+
+mediator = ConcreteMediator(c1, c2)
+
+c1.do_a()
